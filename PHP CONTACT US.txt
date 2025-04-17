@@ -1,0 +1,47 @@
+<?php
+// Enqueue parent theme styles
+add_action('wp_enqueue_scripts', 'enqueue_parent_styles');
+function enqueue_parent_styles() {
+    wp_enqueue_style('parent-style', get_template_directory_uri() . '/style.css');
+}
+
+
+// Hook to handle the form submission
+add_action('admin_post_nopriv_handle_contact_form', 'handle_contact_form');
+add_action('admin_post_handle_contact_form', 'handle_contact_form');
+
+function handle_contact_form() {
+    // Sanitize and validate form input
+    $name    = sanitize_text_field($_POST['name']);
+    $company = sanitize_text_field($_POST['company']);
+    $phone   = sanitize_text_field($_POST['phone']);
+    $email   = sanitize_email($_POST['email']);
+    $inquiry = sanitize_textarea_field($_POST['inquiry']);
+
+    // Check if all fields are filled
+    if (empty($name) || empty($company) || empty($phone) || empty($email) || empty($inquiry)) {
+        wp_redirect(home_url('/error')); // Redirect to error page if validation fails
+        exit;
+    }
+
+    // Prepare email data
+    $to = 'linabilal4422@gmail.com'; 
+    $subject = 'New Contact Inquiry from ' . $name;
+    $message = "You have received a new inquiry from the contact form.\n\n";
+    $message .= "Name: $name\n";
+    $message .= "Company: $company\n";
+    $message .= "Phone: $phone\n";
+    $message .= "Email: $email\n";
+    $message .= "Inquiry:\n$inquiry\n";
+    $headers = ['Content-Type: text/plain; charset=UTF-8'];
+
+    // Send the email using wp_mail()
+    $mail_sent = wp_mail($to, $subject, $message, $headers);
+
+    if ($mail_sent) {
+        // If email is sent, redirect to the Thank You page
+        wp_redirect(home_url('/thank-you'));
+        exit;
+    } 
+}
+?>
