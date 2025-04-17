@@ -1,0 +1,142 @@
+<!-- ===================== HTML START ===================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Drag and Combine Courses</title>
+
+  <!-- ===================== CSS START ===================== -->
+  <style>
+    /* Container for course blocks */
+    .course-blocks {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* Draggable course block style */
+    .block {
+      padding: 15px 25px;
+      background-color: #F1F4F8;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      cursor: grab;
+      user-select: none;
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    /* Display area for combined course result */
+    #result {
+      font-size: 1.3rem;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* Reset button styling */
+    #reset-btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #ff5555;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Hover effect for reset button */
+    #reset-btn:hover {
+      background: #e04444;
+    }
+  </style>
+  <!-- ===================== CSS END ===================== -->
+</head>
+<body>
+
+  <!-- Course blocks -->
+  <div class="course-blocks">
+    <div class="block" draggable="true" data-course="AI">AI</div>
+    <div class="block" draggable="true" data-course="Electronics">Electronics</div>
+    <div class="block" draggable="true" data-course="Python">Python</div>
+    <div class="block" draggable="true" data-course="Mechanical">Mechanical</div>
+  </div>
+
+  <!-- Result output -->
+  <div id="result">Your custom course: -</div>
+
+  <!-- Reset button -->
+  <button id="reset-btn">Reset</button>
+
+  <!-- ===================== JavaScript START ===================== -->
+  <script>
+    // Select all draggable blocks
+    const blocks = document.querySelectorAll('.block');
+    let draggedBlock = null;
+
+    // Add drag event handlers to each block
+    blocks.forEach(block => {
+      block.addEventListener('dragstart', () => {
+        draggedBlock = block;
+      });
+
+      block.addEventListener('dragover', (e) => {
+        e.preventDefault(); // Allow dropping
+        if (draggedBlock !== block) {
+          block.style.backgroundColor = '#e0e0e0'; // Highlight
+        }
+      });
+
+      block.addEventListener('dragleave', () => {
+        block.style.backgroundColor = '#F1F4F8'; // Reset color
+      });
+
+      block.addEventListener('drop', (e) => {
+        e.preventDefault();
+        block.style.backgroundColor = '#dfffdc'; // Drop effect
+
+        const targetCourse = block.getAttribute('data-course');
+        const draggedCourse = draggedBlock.getAttribute('data-course');
+
+        if (draggedCourse !== targetCourse) {
+          const pair = [draggedCourse, targetCourse].sort().join('+');
+          let comboName = "New Undiscovered Course!";
+
+          // Known combinations
+          switch (pair) {
+            case "Electronics+Python":
+              comboName = "MicroPython";
+              break;
+            case "AI+Mechanical":
+              comboName = "AI in Robotics";
+              break;
+            case "AI+Python":
+              comboName = "ML Implementation with Python";
+              break;
+            case "Electronics+Mechanical":
+              comboName = "Mechatronics";
+              break;
+          }
+
+          // Show result
+          document.getElementById('result').textContent = `Your custom course: ${comboName}`;
+        }
+      });
+    });
+
+    // Reset button handler
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      blocks.forEach(block => {
+        block.style.backgroundColor = '#F1F4F8';
+      });
+      document.getElementById('result').textContent = "Your custom course: -";
+    });
+  </script>
+  <!-- ===================== JavaScript END ===================== -->
+
+</body>
+</html>
+<!-- ===================== HTML END ===================== -->
