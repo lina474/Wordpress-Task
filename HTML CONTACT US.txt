@@ -1,0 +1,229 @@
+<!-- =================== HTML START =================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us</title>
+
+  <!-- =================== CSS START =================== -->
+  <style>
+    /* Base body styling */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Centered container for the form */
+    .container {
+      width: 50%;
+      margin: 50px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form title */
+    .container h2 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #34495e;
+    }
+
+    /* Description below title */
+    .container p {
+      text-align: center;
+      font-size: 1.1em;
+      margin-bottom: 30px;
+    }
+
+    /* Form layout styling */
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Label styling */
+    label {
+      font-size: 1.1em;
+      margin-bottom: 10px;
+      color: #34495e;
+    }
+
+    /* Input and textarea styling */
+    input, textarea {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+    }
+
+    /* Focus effect on inputs */
+    input:focus, textarea:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    /* Submit button styling */
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 15px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    /* Hover effect on button */
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    /* Responsive layout for smaller screens */
+    @media (max-width: 768px) {
+      .container {
+        width: 80%;
+      }
+    }
+
+    /* Error message style */
+    .error {
+      color: red;
+      font-size: 0.9em;
+      margin-top: -8px;
+      margin-bottom: 10px;
+    }
+  </style>
+  <!-- =================== CSS END =================== -->
+</head>
+<body>
+
+<!-- Form container with header and description -->
+<div class="container">
+  <h2>We'd Love to Hear From You!</h2>
+  <p>Fill in the form below, and we'll get back to you as soon as possible.</p>
+
+  <!-- =================== PHP START (embedded in HTML) =================== -->
+  <!-- Form sends data to WordPress admin-post.php using POST method -->
+  <form id="contactForm" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST">
+    <!-- Hidden field tells WP which action handler to call -->
+    <input type="hidden" name="action" value="handle_contact_form">
+  <!-- =================== PHP END =================== -->
+
+    <!-- Input for full name -->
+    <label for="name">Full Name:</label>
+    <input type="text" id="name" name="name">
+    <div class="error" id="nameError"></div>
+
+    <!-- Input for company -->
+    <label for="company">Company:</label>
+    <input type="text" id="company" name="company">
+    <div class="error" id="companyError"></div>
+
+    <!-- Input for phone number -->
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" name="phone">
+    <div class="error" id="phoneError"></div>
+
+    <!-- Input for email -->
+    <label for="email">Email Address:</label>
+    <input type="email" id="email" name="email">
+    <div class="error" id="emailError"></div>
+
+    <!-- Textarea for inquiry message -->
+    <label for="inquiry">Inquiry:</label>
+    <textarea id="inquiry" name="inquiry" rows="4"></textarea>
+    <div class="error" id="inquiryError"></div>
+
+    <!-- Submit button -->
+    <button type="submit">Send Message</button>
+  </form>
+</div>
+
+<!-- =================== JavaScript START =================== -->
+<script>
+  // Add submit event listener to the form
+  document.getElementById('contactForm').addEventListener('submit', function (e) {
+    let isValid = true; // Tracks if form is valid
+
+    // Get form fields
+    const name = document.getElementById('name');
+    const company = document.getElementById('company');
+    const phone = document.getElementById('phone');
+    const email = document.getElementById('email');
+    const inquiry = document.getElementById('inquiry');
+
+    // Get error message elements
+    const nameError = document.getElementById('nameError');
+    const companyError = document.getElementById('companyError');
+    const phoneError = document.getElementById('phoneError');
+    const emailError = document.getElementById('emailError');
+    const inquiryError = document.getElementById('inquiryError');
+
+    // Reset error messages and border colors
+    [nameError, companyError, phoneError, emailError, inquiryError].forEach(el => el.textContent = '');
+    [name, company, phone, email, inquiry].forEach(input => input.style.borderColor = '#ddd');
+
+    // Validate each field
+
+    if (name.value.trim() === '') {
+      nameError.textContent = 'Full Name is required.';
+      name.style.borderColor = 'red';
+      isValid = false;
+    }
+
+    if (company.value.trim() === '') {
+      companyError.textContent = 'Company is required.';
+      company.style.borderColor = 'red';
+      isValid = false;
+    }
+
+    // Phone validation using regex
+    const phonePattern = /^[0-9\-\+\s\(\)]{7,15}$/;
+    if (phone.value.trim() === '') {
+      phoneError.textContent = 'Phone number is required.';
+      phone.style.borderColor = 'red';
+      isValid = false;
+    } else if (!phonePattern.test(phone.value.trim())) {
+      phoneError.textContent = 'Invalid phone number format.';
+      phone.style.borderColor = 'red';
+      isValid = false;
+    }
+
+    // Email validation using regex
+    const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (email.value.trim() === '') {
+      emailError.textContent = 'Email is required.';
+      email.style.borderColor = 'red';
+      isValid = false;
+    } else if (!emailPattern.test(email.value.trim())) {
+      emailError.textContent = 'Invalid email address.';
+      email.style.borderColor = 'red';
+      isValid = false;
+    }
+
+    // Inquiry field validation
+    if (inquiry.value.trim() === '') {
+      inquiryError.textContent = 'Inquiry message is required.';
+      inquiry.style.borderColor = 'red';
+      isValid = false;
+    }
+
+    // Prevent form submission if any field is invalid
+    if (!isValid) {
+      e.preventDefault();
+    }
+  });
+</script>
+<!-- =================== JavaScript END =================== -->
+
+</body>
+</html>
+<!-- =================== HTML END =================== -->
